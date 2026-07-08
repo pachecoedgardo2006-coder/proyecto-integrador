@@ -5,7 +5,8 @@ import { VistaCitas } from './views/citas/index.js';
 const rutas = {
     '/': VistaTutores,
     '/tutor': VistaDetalleTutor,
-    '/citas': VistaCitas
+    '/citas': VistaCitas,
+    '/admins': VistaCitas
 };
 
 // Inicializar rol por defecto si no existe

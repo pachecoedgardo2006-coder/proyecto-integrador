@@ -1,4 +1,4 @@
-// Asegúrate de tener Axios cargado (ya sea por CDN en el HTML o por npm)
+import axios from 'axios';
 const api = axios.create({
     baseURL: '/api'
 });
