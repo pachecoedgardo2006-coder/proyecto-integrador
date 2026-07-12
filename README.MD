@@ -1,4 +1,4 @@
-<h1 align="center">ConnecTor</h1>
+<h1 align="center">ConnecThor</h1>
 
 <p align="center">
   <strong>Academic Mentoring Management Platform</strong><br>
@@ -153,7 +153,7 @@ A web platform that allows mentors and learners to schedule tutoring sessions, m
 # Project Structure
 
 ```text
-ConnecTor/
+ConnecThor/
 │
 ├── apps/
 │   ├── frontend/
