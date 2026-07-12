@@ -53,8 +53,8 @@ A web platform that allows mentors and learners to schedule tutoring sessions, m
 <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white">
 </a>
 
-<a href="https://www.atlassian.com/software/jira">
-<img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=jira&logoColor=white">
+<a href="https://www.notion.so/">
+<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white">
 </a>
 
 </p>
@@ -145,7 +145,7 @@ A web platform that allows mentors and learners to schedule tutoring sessions, m
 | Backend | Express.js |
 | Database | PostgreSQL |
 | Version Control | Git & GitHub |
-| Project Management | Jira |
+| Project Management | Notion |
 | Deployment | Vercel |
 
 ---
@@ -291,13 +291,12 @@ JWT_SECRET=
 
 | Role | Member |
 |--------|---------|
-| Product Owner | |
-| Scrum Master | |
-| Backend Developer | |
-| Backend Developer | |
-| Frontend Developer | |
-| Frontend Developer | |
-| Frontend Developer | |
+| Scrum Master |  Jandy José Peña Vásquez |
+| Backend Developer | Edgardo de Jesus Pacheco Marimon |
+| Backend Developer | María José Chavarriaga Rodriguez|
+| Frontend Developer | Mauricio Jesus Onofre Jimenez|
+| Frontend Developer |Elianis Cristina Cervantes Sanchez |
+| Frontend Developer | Moisés Alfredo Gutiérrez Haad |
 
 ---
 
@@ -322,7 +321,6 @@ Every contribution must follow the project's workflow.
 - Conventional Commits
 - Pull Requests required
 - Code Review before merging
-- Jira task linked to every Pull Request
 
 ---
 
