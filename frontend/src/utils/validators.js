@@ -1,56 +1,64 @@
 // Validar Email
 
-export function validarEmail(valor) {
-    const patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!valor) return {
-        valido: false, mensaje: 'El correo es obligatorio. '
+export function validateEmail(value) {
+    const pattern  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!value) return {
+        valid: false, message: 'Email is required. '
     };
 
-    if (!patron.test(valor)) return {
-        valido: false, mensaje: 'Ingrese un correo vàlido. '
+    if (!pattern.test(value)) return {
+        valid: false, message: 'Enter a valid email. '
 
     };
 
-    return { valido: true, mensaje: ''};
+    return { valid: true, message: ''};
 
 }
 
 // Validar Nombre:
 
-export function validarNombre(valor){
-    const nombre = valor.trim();
-    if(!nombre) return {
-        valido: false, mensaje: 'Ingrese su nombre completo. '
+export function validateName(value){
+    const name = value.trim();
+    if(!name) return {
+        valid: false, message: 'Enter your full name.. '
     };
 
-    if (nombre.length() < 3 ) return {
-        valido: false, mensaje: 'Nombre minimo de 3 letras. '
+    if (name.length < 3 ) return {
+        valid: false, message: 'Name must be at least 3 characters. '
     };
 
-    return {valido: true, mensaje: ''};
+    return {valid: true, message: ''};
 }
 
 // Validar Password:
 
-export function validarPassword(valor) {
-    const simbolo =  /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(valor);
-    if (!valor) return {
-        valido: false, mensaje: 'La contraseña es obligatoria. '
+export function validatePassword(value) {
+    const symbol =  /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(value);
+    if (!value) return {
+        valid: false, message: 'Password is required. '
     };
 
-    if (valor.length < 8) return {
-        valido: false, mensaje: 'Dede tener al menos 8 caracteres. '
+    if (value.length < 8) return {
+        valid: false, message: 'Must be at least 8 characters. '
     };
 
-    if (!simbolo) return {
-        valido: false, mensaje: 'Dede incluir al menos un símbolo (!@#$...). '
+    if (!symbol) return {
+        valid: false, message: 'Must include at least one symbol (!@#$...). '
     };
 
-    return {valido: true, mensaje: ''};
+    return {valid: true, message: ''};
 }
 
 // Confirmacion de Password:
 
-export function validarConfirmacion(Password, Confirmacion) {
+export function validateConfirmation(password, confirmation) {
+    if (!confirmation) return {
+        valid: false, message: 'Confirm your password.'
+    };
 
+    if (password !== confirmation)  return {
+        valido: false, message: 'Passwords do not match. '
+    };
+
+    return {valid: true, message: ''};
 }
