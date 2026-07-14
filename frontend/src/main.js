@@ -1,12 +1,14 @@
 import { VistaTutores } from './views/tutores/index.js';
 import { VistaDetalleTutor } from './views/tutores/detalle.js';
 import { VistaCitas } from './views/citas/index.js';
+import { loginView } from './views/auth/login.js';
 
 const rutas = {
     '/': VistaTutores,
     '/tutor': VistaDetalleTutor,
     '/citas': VistaCitas,
-    '/admins': VistaCitas
+    '/admins': VistaCitas,
+    '/login': loginView
 };
 
 // Inicializar rol por defecto si no existe
