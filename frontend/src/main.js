@@ -2,6 +2,7 @@ import { VistaTutores } from './views/tutores/index.js';
 import { VistaDetalleTutor } from './views/tutores/detalle.js';
 import { VistaCitas } from './views/citas/index.js';
 import { loginView } from './views/auth/login.js';
+import { getCurrentUser } from './services/authService.js';
 
 const rutas = {
     '/': VistaTutores,
@@ -22,6 +23,12 @@ async function router() {
 
     const hashCompleto = window.location.hash || '#/';
     const rutaLimpia = hashCompleto.split('?')[0].replace('#', '');
+
+    const publicRoutes = ['/login', '/register'];
+    if (!getCurrentUser () && !publicRoutes.includes(rutaLimpia)) {
+        window.location.hash = '#/login';
+        return;
+    }
 
     const componenteVista = rutas[rutaLimpia] || VistaTutores;
     const vistaNodo = await componenteVista();

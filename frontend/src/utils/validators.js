@@ -62,3 +62,18 @@ export function validateConfirmation(password, confirmation) {
 
     return {valid: true, message: ''};
 }
+
+// Validar cedula
+
+export function validateCedula(value) {
+    const cedula = value.trim();
+    if (!cedula) return {
+        valid: false, message: 'ID number is required'
+    };
+
+    if (!/^\d+$/.test(cedula)) return {
+        valid: false, message: 'ID number must contain only numbers. '
+    };
+
+    return { valid: true, message: ''};
+}
