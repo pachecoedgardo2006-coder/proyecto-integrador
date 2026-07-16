@@ -1,12 +1,17 @@
 import { VistaTutores } from './views/tutores/index.js';
 import { VistaDetalleTutor } from './views/tutores/detalle.js';
 import { VistaCitas } from './views/citas/index.js';
+import { loginView } from './views/auth/login.js';
+import { registerView } from './views/auth/register.js';
+import { getCurrentUser } from './services/authService.js';
 
 const rutas = {
     '/': VistaTutores,
     '/tutor': VistaDetalleTutor,
     '/citas': VistaCitas,
-    '/admins': VistaCitas
+    '/admins': VistaCitas,
+    '/login': loginView,
+    '/register': registerView
 };
 
 // Inicializar rol por defecto si no existe
@@ -20,6 +25,24 @@ async function router() {
 
     const hashCompleto = window.location.hash || '#/';
     const rutaLimpia = hashCompleto.split('?')[0].replace('#', '');
+
+    const publicRoutes = ['/login', '/register'];
+
+    const navElement = document.querySelector('nav');
+    const footerElement = document.querySelector('footer');
+
+    if (publicRoutes.includes(rutaLimpia)) {
+        navElement.classList.add('hidden');
+        footerElement.classList.add('hidden');
+    } else {
+        navElement.classList.remove('hidden');
+        footerElement.classList.remove('hidden');
+    }
+
+    if (!getCurrentUser() && !publicRoutes.includes(rutaLimpia)) {
+        window.location.hash = '#/login';
+        return;
+    }
 
     const componenteVista = rutas[rutaLimpia] || VistaTutores;
     const vistaNodo = await componenteVista();
