@@ -1,4 +1,6 @@
 const { dbRun, dbQuery } = require('../config/db');
+const asyncHandler = require('../utils/asyncHandler');
+const ApiError = require('../utils/ApiError');
 
 // Obtener lista de citas agendadas
 const obtenerCitas = async (req, res) => {
@@ -15,20 +17,20 @@ const obtenerCitas = async (req, res) => {
 };
 
 // Crear/Agendar una nueva cita
-const agendarCita = async (req, res) => {
+const agendarCita = asyncHandler(async (req, res) => {
     const { tutor_id, estudiante_nombre, fecha, hora } = req.body;
+
     if (!tutor_id || !estudiante_nombre || !fecha || !hora) {
-        return res.status(400).json({ error: "Todos los campos son obligatorios" });
+        throw ApiError.badRequest('Todos los campos son obligatorios', 'MISSING_FIELDS');
     }
-    try {
-        const resultado = await dbRun(
-            "INSERT INTO citas (tutor_id, estudiante_nombre, fecha, hora) VALUES (?, ?, ?, ?)",
-            [tutor_id, estudiante_nombre, fecha, hora]
-        );
-        res.status(201).json({ mensaje: "Cita agendada con éxito", citaId: resultado.id });
-    } catch (error) {
-        res.status(500).json({ error: "Error al agendar cita: " + error.message });
-    }
-};
+
+    const resultado = await dbRun(
+        "INSERT INTO citas (tutor_id, estudiante_nombre, fecha, hora) VALUES (?, ?, ?, ?)",
+        [tutor_id, estudiante_nombre, fecha, hora]
+    );
+    res.status(201).json({ mensaje: "Cita agendada con éxito", citaId: resultado.id });
+});
+
+    
 
 module.exports = { obtenerCitas, agendarCita };
