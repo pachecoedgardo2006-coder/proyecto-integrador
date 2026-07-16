@@ -1,0 +1,30 @@
+const { dbRun, dbQuery } = require('../config/db');
+const asyncHandler = require('../utils/asyncHandler');
+const ApiError = require('../utils/ApiError');
+
+// Obtener lista de citas agendadas
+const obtenerCitas = asyncHandler(async (req, res) => {
+    const citas = await dbQuery(`
+        SELECT citas.*, tutores.nombre as tutor_nombre 
+        FROM citas 
+        JOIN tutores ON citas.tutor_id = tutores.id
+    `);
+    res.json(citas);
+});
+
+// Crear/Agendar una nueva cita
+const agendarCita = asyncHandler(async (req, res) => {
+    const { tutor_id, estudiante_nombre, fecha, hora } = req.body;
+
+    if (!tutor_id || !estudiante_nombre || !fecha || !hora) {
+        throw ApiError.badRequest('Todos los campos son obligatorios', 'MISSING_FIELDS');
+    }
+
+    const resultado = await dbRun(
+        "INSERT INTO citas (tutor_id, estudiante_nombre, fecha, hora) VALUES (?, ?, ?, ?)",
+        [tutor_id, estudiante_nombre, fecha, hora]
+    );
+    res.status(201).json({ mensaje: "Cita agendada con éxito", citaId: resultado.id });
+});
+
+module.exports = { obtenerCitas, agendarCita };
