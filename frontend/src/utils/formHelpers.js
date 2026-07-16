@@ -1,4 +1,4 @@
-// Muestra mensaje de error y cambia el estilo del campo.
+//  Displays the validation error for a form field.
 
 export function showError(inputEl, errorEl, message) {
     inputEl.setAttribute('aria-invalid', 'true');
@@ -6,7 +6,7 @@ export function showError(inputEl, errorEl, message) {
     errorEl.textContent = message;
 }
  
-// Limpia el mensaje del error y restaura el estado del campo.
+// Clears the validation error from a form field.
 
 export function clearError(inputEl, errorEl) {
     inputEl.setAttribute('aria-invalid', 'false');
@@ -14,7 +14,7 @@ export function clearError(inputEl, errorEl) {
     errorEl.textContent = '';
 }
 
-// Cambia el botón entre el estado de normal y el estado de carga.
+// Toggles the button between its normal and loading states
 
 export function toggleButtonLoading(buttonEl, isLoading, normalText, loadingText) {
     if (isLoading)  {
@@ -27,7 +27,7 @@ export function toggleButtonLoading(buttonEl, isLoading, normalText, loadingText
  
 }
 
-//  Campo de formulario reutilizable.
+//  Creates a reusable form field with its associated label and error message.
 
 export function formField({ id, label, type = 'text', placeholder = '', autocomplete = 'off' }) {
     return `
@@ -45,4 +45,17 @@ export function formField({ id, label, type = 'text', placeholder = '', autocomp
         <p id="${id}-error" class="text-red-600 text-xs mt-1"></p>
         </div>
     `;
+}
+
+// Attaches field validation when the input loses focus.
+
+export function attachBlurValidation(inputEl, errorEl, validateFn) {
+    inputEl.addEventListener('blur', () => {
+        const result = validateFn(inputEl.value.trim());
+        if (result.valid) {
+            clearError(inputEl, errorEl);
+        } else {
+            showError(inputEl, errorEl, result.message);
+        }
+    });
 }

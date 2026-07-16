@@ -3,6 +3,7 @@ const api = axios.create({
     baseURL: '/api'
 });
 
+// Attaches the authentication token to outgoing API requests.
 
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('auth-token');

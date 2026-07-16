@@ -1,4 +1,5 @@
-// Validar Email
+// Validates the user's email address.
+ 
 
 export function validateEmail(value) {
     const pattern  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,7 +16,7 @@ export function validateEmail(value) {
 
 }
 
-// Validar Nombre:
+// Validates the user's full name.
 
 export function validateName(value){
     const name = value.trim();
@@ -30,7 +31,7 @@ export function validateName(value){
     return {valid: true, message: ''};
 }
 
-// Validar Password:
+// Validates the user's password
 
 export function validatePassword(value) {
     const symbol =  /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(value);
@@ -49,7 +50,7 @@ export function validatePassword(value) {
     return {valid: true, message: ''};
 }
 
-// Confirmacion de Password:
+// Validates that the password confirmation matches the original password.
 
 export function validateConfirmation(password, confirmation) {
     if (!confirmation) return {
@@ -57,13 +58,13 @@ export function validateConfirmation(password, confirmation) {
     };
 
     if (password !== confirmation)  return {
-        valido: false, message: 'Passwords do not match. '
+        valid: false, message: 'Passwords do not match. '
     };
 
     return {valid: true, message: ''};
 }
 
-// Validar cedula
+// Validates the user's ID number.
 
 export function validateCedula(value) {
     const cedula = value.trim();
