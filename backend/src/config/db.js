@@ -1,12 +1,22 @@
-require('dotenv').config();
-const { Pool } = require('pg');
+import pkg from 'pg';
+const { Pool } = pkg;
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+// Configurar __dirname para ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cargar .env
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  password: String(process.env.DB_PASSWORD || ''),
+  port: Number(process.env.DB_PORT) || 5432,
 });
 
 pool.query('SELECT NOW()', (err, res) => {
@@ -17,21 +27,22 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-const dbQuery = async (query, params = []) => {
+// Hacemos que dbQuery devuelva el objeto result completo, para no romper tus controladores existentes
+export const dbQuery = async (query, params = []) => {
   const result = await pool.query(query, params);
-  return result.rows;
+  return result; // Retorna el objeto completo de pg (con .rows, .rowCount, etc.)
 };
 
-const dbRun = async (query, params = []) => {
+export const dbRun = async (query, params = []) => {
   const result = await pool.query(query, params);
+  
+  const firstRow = result.rows[0];
+  const returnedId = firstRow ? Object.values(firstRow)[0] : undefined;
+
   return {
-    id: result.rows[0]?.id,
+    id: returnedId,
     changes: result.rowCount,
   };
 };
 
-module.exports = {
-  db: pool,
-  dbQuery,
-  dbRun,
-};
+export const db = pool;

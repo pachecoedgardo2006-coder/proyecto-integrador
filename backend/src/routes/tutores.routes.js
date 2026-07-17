@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const { obtenerTutores, obtenerDetalleTutor } = require('../controllers/tutores.controller');
+import { Router } from 'express';
+import { getMentors, getMentorDetails } from '../controllers/tutores.controller.js';
 
-router.get('/', obtenerTutores);
-router.get('/:id', obtenerDetalleTutor);
+const router = Router();
 
-module.exports = router;
+router.get('/', getMentors);
+router.get('/:id', getMentorDetails);
+
+export default router;

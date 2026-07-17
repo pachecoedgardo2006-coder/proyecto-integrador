@@ -12,6 +12,7 @@ export async function login({ email, password }) {
 
 // Registers a new user and stores the session data.
 
+
 export async function register({ idNumber, firstName, lastName, email, password, role }) {
     const response = await api.post('/auth/register', { idNumber, firstName, lastName, email, password, role});
     const { token, user} = response.data;

@@ -3,21 +3,15 @@ import { VistaDetalleTutor } from './views/tutores/detalle.js';
 import { VistaCitas } from './views/citas/index.js';
 import { loginView } from './views/auth/login.js';
 import { registerView } from './views/auth/register.js';
-import { getCurrentUser } from './services/authService.js';
+import { getCurrentUser } from './services/authService.js'; // Asegúrate de importar también logout si existe ahí
 
 const rutas = {
     '/': VistaTutores,
     '/tutor': VistaDetalleTutor,
     '/citas': VistaCitas,
-    '/admins': VistaCitas,
     '/login': loginView,
     '/register': registerView
 };
-
-// Inicializar rol por defecto si no existe
-if (!localStorage.getItem('user_role')) {
-    localStorage.setItem('user_role', 'ESTUDIANTE');
-}
 
 async function router() {
     const appElement = document.getElementById('app');
@@ -28,15 +22,18 @@ async function router() {
 
     const publicRoutes = ['/login', '/register'];
 
+    // Asegurarse de que los elementos existan en tu index.html
     const navElement = document.querySelector('nav');
     const footerElement = document.querySelector('footer');
 
-    if (publicRoutes.includes(rutaLimpia)) {
-        navElement.classList.add('hidden');
-        footerElement.classList.add('hidden');
-    } else {
-        navElement.classList.remove('hidden');
-        footerElement.classList.remove('hidden');
+    if (navElement && footerElement) {
+        if (publicRoutes.includes(rutaLimpia)) {
+            navElement.classList.add('hidden');
+            footerElement.classList.add('hidden');
+        } else {
+            navElement.classList.remove('hidden');
+            footerElement.classList.remove('hidden');
+        }
     }
 
     if (!getCurrentUser() && !publicRoutes.includes(rutaLimpia)) {
@@ -44,17 +41,29 @@ async function router() {
         return;
     }
 
+    const logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) {
+        // Removemos cualquier listener previo para evitar duplicados al navegar
+        logoutBtn.onclick = null; 
+        
+        logoutBtn.onclick = () => {
+            // 1. Limpiar los datos de sesión del almacenamiento local
+            localStorage.removeItem('user'); // O token, según como guardes la sesión
+            localStorage.removeItem('token'); 
+            
+            // Si en tu authService tienes una función logout(), puedes llamarla aquí:
+            // logout(); 
+
+            // 2. Redireccionar al login de inmediato
+            window.location.hash = '#/login';
+        };
+    }
+    // ==========================================
+
     const componenteVista = rutas[rutaLimpia] || VistaTutores;
     const vistaNodo = await componenteVista();
     appElement.appendChild(vistaNodo);
 }
-
-// Configurar el comportamiento del selector de cuenta/rol
-document.getElementById('selector-rol').value = localStorage.getItem('user_role');
-document.getElementById('selector-rol').addEventListener('change', (e) => {
-    localStorage.setItem('user_role', e.target.value);
-    router(); // Re-renderizar la vista actual con el nuevo rol
-});
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);

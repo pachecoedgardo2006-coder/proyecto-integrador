@@ -1,79 +1,66 @@
-const { dbQuery } = require('../config/db');
+import { dbQuery } from '../config/db.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
-// Obtener todos los tutores con sus lenguajes
-const obtenerTutores = async (req, res) => {
-    try {
-        const tutores = await dbQuery("SELECT * FROM tutores");
+// Get all mentors with their specialties
+export const getMentors = asyncHandler(async (req, res) => {
+    const query = `
+        SELECT 
+            m.id AS mentor_id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            u.phone,
+            m.biography,
+            m.experience,
+            m.average_rating,
+            COALESCE(
+                json_agg(
+                    json_build_object('id', s.id, 'name', s.name)
+                ) FILTER (WHERE s.id IS NOT NULL), '[]'
+            ) AS specialties
+        FROM "mentor" m
+        JOIN "user" u ON m.user_id = u.id_number
+        LEFT JOIN "mentor_specialty" ms ON m.id = ms.mentor_id
+        LEFT JOIN "specialty" s ON ms.specialty_id = s.id
+        WHERE u.active = true
+        GROUP BY m.id, u.first_name, u.last_name, u.email, u.phone;
+    `;
+    const result = await dbQuery(query);
+    res.status(200).json(result.rows);
+});
 
-        for (let tutor of tutores) {
-            const lenguajes = await dbQuery(
-                "SELECT lenguaje FROM tutor_lenguajes WHERE tutor_id = $1",
-                [tutor.id]
-            );
-
-            tutor.lenguajes = lenguajes.map(l => l.lenguaje);
-
-            const promedio = await dbQuery(
-                "SELECT AVG(calificacion) AS prom FROM reseñas WHERE tutor_id = $1",
-                [tutor.id]
-            );
-
-            tutor.calificacion = promedio[0].prom
-                ? parseFloat(promedio[0].prom).toFixed(1)
-                : 5.0;
-        }
-
-        res.json(tutores);
-
-    } catch (error) {
-        res.status(500).json({
-            error: "Error al obtener tutores: " + error.message
-        });
-    }
-};
-
-// Obtener detalle de un tutor
-const obtenerDetalleTutor = async (req, res) => {
-
+// Get detailed mentor information, including availability
+export const getMentorDetails = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    try {
+    const mentorQuery = `
+        SELECT 
+            m.id AS mentor_id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            m.biography,
+            m.experience,
+            m.average_rating
+        FROM "mentor" m
+        JOIN "user" u ON m.user_id = u.id_number
+        WHERE m.id = $1;
+    `;
+    const mentorResult = await dbQuery(mentorQuery, [id]);
 
-        const tutor = await dbQuery(
-            "SELECT * FROM tutores WHERE id = $1",
-            [id]
-        );
-
-        if (tutor.length === 0) {
-            return res.status(404).json({
-                error: "Tutor no encontrado"
-            });
-        }
-
-        const lenguajes = await dbQuery(
-            "SELECT lenguaje FROM tutor_lenguajes WHERE tutor_id = $1",
-            [id]
-        );
-
-        const reseñas = await dbQuery(
-            "SELECT estudiante_nombre, calificacion, comentario FROM reseñas WHERE tutor_id = $1",
-            [id]
-        );
-
-        res.json({
-            ...tutor[0],
-            lenguajes: lenguajes.map(l => l.lenguaje),
-            reseñas
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            error: "Error al obtener detalle: " + error.message
-        });
+    if (mentorResult.rows.length === 0) {
+        return res.status(404).json({ message: 'Mentor not found' });
     }
-};
 
-module.exports = {
-    obtenerTutores,
-    obtenerDetalleTutor
-};
+    const availabilityQuery = `
+        SELECT id, day_of_week, start_time, end_time, status
+        FROM "availability"
+        WHERE mentor_id = $1 AND status = 'available';
+    `;
+    const availabilityResult = await dbQuery(availabilityQuery, [id]);
+
+    const mentor = mentorResult.rows[0];
+    mentor.availabilities = availabilityResult.rows;
+
+    res.status(200).json(mentor);
+});

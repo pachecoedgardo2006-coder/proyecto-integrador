@@ -1,12 +1,20 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const tutoresRoutes = require('./routes/tutores.routes');
-const citasRoutes = require('./routes/citas.routes');
+// Importar rutas (¡No olvides la extensión .js al final!)
+import authRoutes from './routes/auth.routes.js';
+import tutoresRoutes from './routes/tutores.routes.js';
+import citasRoutes from './routes/citas.routes.js';
 
-const notFoundHandler = require('./middlewares/notFoundHandler');
-const errorHandler = require('./middlewares/errorHandler');
+// Importar middlewares
+import notFoundHandler from './middleware/notFoundHandler.js';
+import errorHandler from './middleware/errorHandler.js';
+
+// Configurar __dirname para ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -15,12 +23,11 @@ app.use(cors());
 app.use(express.json());
 
 // Endpoints de la API REST
+app.use('/api/auth', authRoutes);
 app.use('/api/tutores', tutoresRoutes);
 app.use('/api/citas', citasRoutes);
 
 // 404 uniforme SOLO para rutas /api no encontradas.
-// No se registra como catch-all global para no interferir con el
-// enrutamiento de la SPA (app.get('*', ...) más abajo).
 app.use('/api', notFoundHandler);
 
 // Servir archivos estáticos del frontend en producción (Vite build)
@@ -31,7 +38,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
 });
 
-// Manejador de errores central. SIEMPRE al final, después de todas las rutas.
+// Manejador de errores central. SIEMPRE al final.
 app.use(errorHandler);
 
-module.exports = app;
+export default app;
