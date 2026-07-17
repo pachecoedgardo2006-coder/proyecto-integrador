@@ -1,133 +1,331 @@
+<h1 align="center">ConnecThor</h1>
 
-# 🎓 TutorMatch - Plataforma SPA de Tutorías Universitarias  
-  
-TutorMatch es un prototipo funcional de panel administrativo y operativo de alta eficiencia, diseñado para la gestión y agendamiento de tutorías académicas entre estudiantes y docentes de programación.   
-  
-Aprovechando una arquitectura de ****\*\*Monorepo\*\***** desacoplada, el sistema elimina la sobrecarga de frameworks reactivos pesados en el frontend, utilizando manipulación atómica del DOM nativo y un sistema de control de sesiones simuladas por roles para agilizar la validación del flujo operativo.  
-  
----  
-  
-## 🛠️ Stack Tecnológico  
-  
-- ****\*\*Frontend:\*\***** Vite + JavaScript Vanilla (Manipulación modular estructurada del DOM mediante funciones nativas con ciclo de vida limpio).  
-- ****\*\*Estilos:\*\***** Tailwind CSS v4 con una estética unificada de alto contraste (Fondo oscuro extremo en \`bg-slate-950\`, bordes duros en \`slate-800\` / \`border-slate-800\`, acentuación cromática en Rojo Fuego y Mostaza, tipografías pesadas y texto estrictamente estructurado).  
-- ****\*\*HTTP Client:\*\***** Axios (Configurado mediante una instancia centralizada orientada al prefijo `/api\` con proxy dinámico en desarrollo).  
-- ****\*\*Backend:\*\***** Node.js + Express Framework.  
-- ****\*\*Base de Datos:\*\***** SQLite 3 (Persistencia local integrada en un archivo \`.db\` controlado mediante consultas nativas por promesas \`async/await\`, garantizando cero costos de infraestructura).  
-  
----  
-  
-# 📂 Arquitectura del Sistema  
-  
-```text  
-tutorias-monorepo/  
-├── backend/  
-│   ├── data/  
-│   │   └── tutorias.db                  # Base de datos SQLite nativa (Auto-creada)  
-│   ├── src/  
-│   │   ├── config/  
-│   │   │   └── db.js                    # Inicialización del esquema SQL y helpers de promesas  
-│   │   ├── controllers/                 # Lógica de negocio y consultas CRUD atómicas  
-│   │   │   ├── citas.controller.js      # Gestión operativa de agendamientos  
-│   │   │   └── tutores.controller.js    # Filtrado y extracción de perfiles/reseñas  
-│   │   ├── routes/                      # Definición de endpoints de la API REST  
-│   │   │   ├── citas.routes.js       
-│   │   │   └── tutores.routes.js        
-│   │   └── app.js                       # Configuración de Express, middlewares y montaje estático  
-│   ├── index.js                         # Punto de entrada principal y arranque del servidor HTTP  
-│   ├── nodemon.json                     # Reglas de aislamiento para evitar reinicios en bucle  
-│   └── package.json                     # Dependencias del backend y scripts de inicio  
-│   
-├── frontend/  
-│   ├── src/  
-│   │   ├── services/  
-│   │   │   └── api.js                   # Instancia de Axios configurada con prefijo relativo /api  
-│   │   ├── views/                       # Secciones estructuradas bajo un esquema modular limpio  
-│   │   │   ├── citas/  
-│   │   │   │   └── index.js             # Panel adaptativo de agendamiento e historial por rol  
-│   │   │   └── tutores/  
-│   │   │       ├── detalle.js           # Orquestador del perfil detallado y reseñas del tutor  
-│   │   │       └── index.js             # Catálogo de tutores con filtros reactivos por lenguaje  
-│   │   ├── main.js                      # Orquestador global de la SPA y router basado en Hash (#)  
-│   │   └── style.css                    # Estilos globales y configuraciones bases  
-│   ├── index.html                       # Contenedor único (Main Wrapper) para el montaje de la interfaz  
-│   ├── package.json                     # Dependencias del frontend (Vite, Axios)  
-│   └── vite.config.js                   # Configuración de empaquetado y proxy de desarrollo  
-│  
-├── package.json                         # Configuración de scripts globales y Concurrently  
-└── README.md                            # Documentación técnica e ingeniería del sistema  
+<p align="center">
+  <strong>Academic Mentoring Management Platform</strong><br>
+  Connecting learners and mentors through intelligent scheduling, progress tracking, and continuous feedback.
+</p>
 
+<p align="center">
+  <a href="https://git-scm.com/">
+    <img src="https://img.shields.io/badge/Monorepo-111111?style=for-the-badge">
+  </a>
+  <a href="https://www.conventionalcommits.org/">
+    <img src="https://img.shields.io/badge/Conventional_Commits-1.0.0-FE5196?style=for-the-badge&logo=conventionalcommits&logoColor=white">
+  </a>
+</p>
+
+---
+
+<p align="center">
+A web platform that allows mentors and learners to schedule tutoring sessions, monitor academic progress, and evaluate mentoring quality in one centralized system.
+</p>
+
+---
+
+# Table of Contents
+
+- [Badges](#badges)
+- [Features](#features)
+- [Project Categories](#project-categories)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Environment Variables](#environment-variables)
+- [Roadmap](#roadmap)
+- [Team](#team)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+
+---
+
+<div align="center">
+
+# Badges
+
+### Build & Tooling
+
+<p>
+<a href="https://vite.dev/">
+<img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white">
+</a>
+
+<a href="https://git-scm.com/">
+<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white">
+</a>
+
+<a href="https://www.notion.so/">
+<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white">
+</a>
+
+</p>
+
+### Frontend
+
+<p>
+
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">
+<img src="https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+</a>
+
+<a href="https://vite.dev/">
+<img src="https://img.shields.io/badge/Vite-SPA-646CFF?style=for-the-badge&logo=vite&logoColor=white">
+</a>
+
+<a href="https://tailwindcss.com/">
+<img src="https://img.shields.io/badge/TailwindCSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
+</a>
+
+</p>
+
+### Backend
+
+<p>
+
+<a href="https://expressjs.com/">
+<img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white">
+</a>
+
+<a href="https://www.postgresql.org/">
+<img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white">
+</a>
+
+<a href="#">
+<img src="https://img.shields.io/badge/API-REST-25A162?style=for-the-badge">
+</a>
+
+</p>
+
+### Deployment
+
+<p>
+
+<a href="https://vercel.com/">
+<img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white">
+</a>
+
+<a href="https://github.com/">
+<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+</a>
+
+</p>
+
+</div>
+
+---
+
+# Features
+
+- Secure authentication with role-based access.
+- Mentor availability calendar.
+- Tutoring session scheduling.
+- Academic progress tracking.
+- Task management with progress indicators.
+- Anonymous mentor evaluations.
+- Skill assessment comparison.
+- Personal dashboards for mentors and learners.
+- RESTful API architecture.
+- Responsive SPA interface.
+
+---
+
+# Project Categories
+
+- Education
+- Technology & Innovation
+- Productivity
+
+---
+
+# Technology Stack
+
+| Layer | Technology |
+|---------|------------|
+| Frontend | HTML5, CSS3, JavaScript (Vanilla), Vite |
+| Styling | Tailwind CSS v4 |
+| Backend | Express.js |
+| Database | PostgreSQL |
+| Version Control | Git & GitHub |
+| Project Management | Notion |
+| Deployment | Vercel |
+
+---
+
+# Project Structure
+
+```text
+ConnecThor/
+│
+├── apps/
+│   ├── frontend/
+│   │   ├── public/
+│   │   ├── src/
+│   │   │   ├── assets/
+│   │   │   ├── components/
+│   │   │   ├── layouts/
+│   │   │   ├── pages/
+│   │   │   ├── router/
+│   │   │   ├── services/
+│   │   │   ├── store/
+│   │   │   ├── styles/
+│   │   │   └── main.js
+│   │   ├── index.html
+│   │   └── package.json
+│   │
+│   └── backend/
+│       ├── src/
+│       │   ├── config/
+│       │   ├── controllers/
+│       │   ├── middlewares/
+│       │   ├── models/
+│       │   ├── routes/
+│       │   ├── services/
+│       │   ├── utils/
+│       │   └── app.js
+│       │
+│       ├── package.json
+│       └── server.js
+│
+├── docs/
+│   ├── frontend/
+│   ├── backend/
+│   ├── database/
+│   ├── scrum/
+│   └── api/
+│
+├── README.md
+└── .gitignore
 ```
 
-## 📝 Reglas de Ingeniería y Ciclo de Vida (Para el Equipo)
+---
 
-Antes de modificar el código, el equipo de desarrollo debe comprender las directrices obligatorias del proyecto para no corromper la arquitectura:
+# Quick Start
 
-1.  ****Sin Frameworks Reactivos:**** El frontend se rige por la manipulación directa de nodos del DOM (`document.createElement`).
-2.  ****Limpieza Estricta de Memoria:**** Antes de montar una nueva vista en el orquestador (`main.js`), el contenedor principal (`#app`) se limpia obligatoriamente con `appElement.innerHTML = ''`. Esto destruye los nodos anteriores y previene fugas de memoria o duplicación de escuchadores de eventos (`EventListeners`).
-3.  ****Enrutamiento por Hash:**** No se realizan peticiones de recarga al servidor para cambiar de página. La SPA escucha el evento `hashchange` del navegador (`#/`, `#/tutor`, `#/citas`) y renderiza el componente modular correspondiente en tiempo real.
-4.  ****Persistencia Real:**** Se prohíbe el uso de almacenamiento volátil del navegador para el flujo transaccional; el agendamiento de citas interactúa de forma directa con la base de datos SQLite. El `localStorage` se reserva única y exclusivamente para mantener el estado de la sesión simulada.
+Clone the repository
 
-## 🔄 Flujo Operativo del Proyecto
+```bash
+git clone https://github.com/your-organization/connector.git
 
-### \[A\] Flujo del Estudiante (Rol: ESTUDIANTE)
+cd ConnecTor
+```
 
-1.  El usuario ingresa a la plataforma y visualiza el catálogo de tutores disponibles.
-2.  Puede filtrar la lista interactivamente mediante un selector de lenguajes (`JavaScript`, `Python`, `SQL`).
-3.  Al hacer clic en "Ver Perfil Completo", la SPA cambia su hash a `#/tutor?id=X`, cargando los datos específicos del docente, su especialidad y el bloque de comentarios/calificaciones dejados por otros alumnos.
-4.  Al pulsar "Agendar Cita", se le redirige al formulario de reserva (`#/citas?tutor=X`) con el docente preseleccionado.
-5.  Llena sus datos y la cita se guarda en SQLite, actualizando inmediatamente la tabla de "Historial de Clases Solicitadas".
+Frontend
 
-### \[B\] Flujo del Docente (Rol: TUTOR)
+```bash
+cd apps/frontend
 
-1.  El usuario cambia su cuenta en la barra de navegación al rol de ****TUTOR (DOCENTE)****.
-2.  Al dirigirse al "Panel Citas", la SPA detecta el cambio de estado en el `localStorage`.
-3.  El formulario de inscripción desaparece de forma automática del DOM para proteger el flujo.
-4.  La interfaz muta y renderiza una tabla de control exclusiva: ****"Clases que debes Dictar"****, mostrando de forma directa los nombres de los estudiantes aspirantes y los bloques horarios reservados.
+npm install
 
-## 🚀 Manual de Instalación y Despliegue Local
+npm run dev
+```
 
-### 📋 Requisitos Previos
+Backend
 
--   ****Node.js**** (Versión v18 o superior recomendada).
--   ****Navegador Web**** moderno (Chrome / Brave / Edge).
+```bash
+cd apps/backend
 
-### ⚙️ Paso 1: Instalación de Dependencias Integradas
+npm install
 
-Abre una terminal en la ****raíz del proyecto**** (`tutorias-monorepo/`) y ejecuta el script automatizado para descargar los módulos de todo el ecosistema de golpe:
+npm run dev
+```
 
-Bash
+---
 
-npm run install:all  
+# Environment Variables
 
-### 💻 Paso 2: Ejecución en Entorno de Desarrollo
+Backend
 
-Para levantar el Backend (puerto 3000) y el Frontend (puerto 5173) de forma simultánea y en paralelo, ejecuta en la raíz:
+```env
+PORT=
 
-Bash
+DB_HOST=
 
-npm run dev  
+DB_PORT=
 
-> 💡 __Nota:__ Al iniciar por primera vez, el backend creará automáticamente la carpeta `backend/data/`, el archivo `tutorias.db` e inyectará los primeros registros de prueba para que la plataforma no inicie vacía.
+DB_NAME=
 
-### 📦 Paso 3: Compilación para Producción (Entrega Final)
+DB_USER=
 
-Cuando el equipo termine el pulido y se requiera unificar el proyecto en un solo servidor ejecutable:
+DB_PASSWORD=
 
-1.  Compila el frontend para optimizar los archivos en producción:  
-    Bash
-    
-    npm run build:frontend  
-    
-2.  Esto generará la carpeta `frontend/dist/`. Ahora, el servidor Express se encargará de servir de manera estática y unificada toda la SPA a través del puerto configurado (`http://localhost:3000`) sin necesidad de encender Vite.
+JWT_SECRET=
+```
 
-## 🛠️ Tareas de Pulido sugeridas para el Equipo (Días 1 a 4)
+---
 
-Para destacar en la entrega del proyecto, el equipo de desarrollo puede enfocarse en implementar sobre esta base:
+# Roadmap
 
--   ****Persistencia de Reseñas:**** Crear el formulario en `views/tutores/detalle.js` y el endpoint `POST` en el backend para permitir a los estudiantes añadir nuevas calificaciones (1-5 estrellas) y comentarios a los tutores.
--   ****Gestión de Estados de la Cita:**** Programar la lógica del botón "Aceptar clase" en la vista del Tutor, conectándolo a un endpoint (`PATCH` o `PUT`) para cambiar el estado en la BD de `PENDIENTE` a `ACEPTADA` o `FINALIZADA`.
+## Sprint 1
 
-  
-\---  
-  
+- Project planning
+- Product Backlog
+- Database design
+- Wireframes
+- Software architecture
+
+---
+
+## Sprint 2
+
+- Authentication
+- User profiles
+- Tutoring scheduling
+- Availability calendar
+- Backend API
+- Database integration
+
+---
+
+## Sprint 3
+
+- Progress tracking
+- Evaluations
+- Dashboard
+- Testing
+- Bug fixing
+- Deployment
+- Documentation
+
+---
+
+# Team
+
+| Role | Member |
+|--------|---------|
+| Scrum Master |  Jandy José Peña Vásquez |
+| Backend Developer | Edgardo de Jesus Pacheco Marimon |
+| Backend Developer | María José Chavarriaga Rodriguez|
+| Frontend Developer | Mauricio Jesus Onofre Jimenez|
+| Frontend Developer |Elianis Cristina Cervantes Sanchez |
+| Frontend Developer | Moisés Alfredo Gutiérrez Haad |
+
+---
+
+# Documentation
+
+| Document | Status |
+|------------|---------|
+| Product Requirements Document | ⏳ |
+| Software Requirements Specification | ⏳ |
+| Architecture | ⏳ |
+| Database Design | ⏳ |
+| API Documentation | ⏳ |
+| User Manual | ⏳ |
+
+---
+
+# Contributing
+
+Every contribution must follow the project's workflow.
+
+- GitFlow strategy
+- Conventional Commits
+- Pull Requests required
+- Code Review before merging
+
+---
+
+<p align="center">
+
+Developed for the **RIWI CodeUp Integrator Project 2026** 🚀
+
+</p>

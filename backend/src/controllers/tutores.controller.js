@@ -6,25 +6,26 @@ const ApiError = require('../utils/ApiError');
 const obtenerTutores = asyncHandler(async (req, res) => {
     const tutores = await dbQuery("SELECT * FROM tutores");
 
-    // Mapeamos para adjuntar los lenguajes a cada tutor
     for (let tutor of tutores) {
+        // Nota: Asegúrate de si tu BD usa ? o $1 para los parámetros
         const lenguajes = await dbQuery("SELECT lenguaje FROM tutor_lenguajes WHERE tutor_id = ?", [tutor.id]);
         tutor.lenguajes = lenguajes.map(l => l.lenguaje);
 
         const promedio = await dbQuery("SELECT AVG(calificacion) as prom FROM reseñas WHERE tutor_id = ?", [tutor.id]);
-        tutor.calificacion = promedio[0].prom ? parseFloat(promedio[0].prom.toFixed(1)) : 5.0;
+        tutor.calificacion = promedio[0].prom ? parseFloat(promedio[0].prom).toFixed(1) : "5.0";
     }
 
     res.json(tutores);
 });
 
-// Obtener el perfil detallado, comentarios y calificaciones de un tutor específico
+// Obtener detalle de un tutor
 const obtenerDetalleTutor = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     const tutor = await dbQuery("SELECT * FROM tutores WHERE id = ?", [id]);
-    if (tutor.length === 0) {
-        throw ApiError.notFound('Tutor no encontrado', 'TUTOR_NOT_FOUND');
+
+    if (!tutor || tutor.length === 0) {
+        throw new ApiError(404, "Tutor no encontrado");
     }
 
     const lenguajes = await dbQuery("SELECT lenguaje FROM tutor_lenguajes WHERE tutor_id = ?", [id]);
@@ -33,8 +34,11 @@ const obtenerDetalleTutor = asyncHandler(async (req, res) => {
     res.json({
         ...tutor[0],
         lenguajes: lenguajes.map(l => l.lenguaje),
-        reseñas: reseñas
+        reseñas
     });
 });
 
-module.exports = { obtenerTutores, obtenerDetalleTutor };
+module.exports = {
+    obtenerTutores,
+    obtenerDetalleTutor
+};
