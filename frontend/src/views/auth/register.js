@@ -22,7 +22,7 @@ export async function registerView() {
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-slate-700 mb-2">Select your role</label>
                     <div class="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Select your role">
-                        <button type="button" id="role-learner" data-role="aprendiz" class="role-option text-left border-2 border-[#2563EB] bg-blue-50 rounded-xl p-3" aria-pressed="true">
+                        <button type="button" id="role-learner" data-role="learner" class="role-option text-left border-2 border-[#2563EB] bg-blue-50 rounded-xl p-3" aria-pressed="true">
                             <span class="block text-sm font-semibold text-[#0F172A]">Student</span>
                             <span class="block text-xs text-[#64748B] mt-0.5">I want to learn</span>
                         </button>
@@ -60,7 +60,7 @@ export async function registerView() {
         </div>
     `;
 
-    let selectedRole = 'aprendiz';
+    let selectedRole = 'learner';
     const roleButtons = container.querySelectorAll('.role-option');
 
     roleButtons.forEach((button) => {

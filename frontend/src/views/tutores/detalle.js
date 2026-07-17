@@ -1,71 +1,118 @@
 import api from '../../services/api.js';
 
 export async function VistaDetalleTutor() {
-    const contenedor = document.createElement('div');
-    contenedor.className = 'p-6 max-w-4xl mx-auto';
+    const container = document.createElement('div');
+    container.className = 'max-w-4xl mx-auto p-6 space-y-6';
 
-    // Obtener el ID de la URL usando los parámetros del hash
     const params = new URLSearchParams(window.location.hash.split('?')[1]);
-    const tutorId = params.get('id');
+    const mentorId = params.get('id');
 
-    if (!tutorId) {
-        contenedor.innerHTML = `<p class="text-red-500 font-bold uppercase">ID de tutor no válido.</p>`;
-        return contenedor;
+    if (!mentorId) {
+        container.innerHTML = `<p class="text-red-500">No mentor specified.</p>`;
+        return container;
     }
 
+    container.innerHTML = `<p class="text-slate-500">Loading profile details...</p>`;
+
     try {
-        const respuesta = await api.get(`/tutores/${tutorId}`);
-        const tutor = respuesta.data;
+        const response = await api.get(`/tutores/${mentorId}`);
+        const mentor = response.data;
 
-        const lenguajesHTML = tutor.lenguajes.map(l => 
-            `<span class="bg-slate-900 text-slate-300 text-xs px-2.5 py-1 font-mono border border-slate-800">${l}</span>`
-        ).join(' ');
-
-        const reseñasHTML = tutor.reseñas.length > 0 ? tutor.reseñas.map(r => `
-            <div class="bg-slate-950 border border-slate-900 p-4 rounded-none">
-                <div class="flex justify-between mb-1">
-                    <span class="font-bold text-slate-200 text-sm">${r.estudiante_nombre}</span>
-                    <span class="text-amber-500 font-bold text-xs">${'★'.repeat(r.calificacion)}</span>
-                </div>
-                <p class="text-sm text-slate-400 font-light">${r.comentario || 'Sin comentario escrito.'}</p>
-            </div>
-        `).join(' ') : `<p class="text-slate-500 text-sm italic">Este tutor aún no tiene comentarios escritos.</p>`;
-
-        contenedor.innerHTML = `
-            <div class="mb-6">
-                <a href="#/" class="text-xs text-slate-500 hover:text-red-500 uppercase tracking-widest font-bold">← Volver al listado</a>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="md:col-span-2 bg-slate-900 border border-slate-800 p-6 rounded-none">
-                    <h1 class="text-3xl font-black text-slate-100 uppercase tracking-tight mb-1">${tutor.nombre}</h1>
-                    <p class="text-xs text-red-500 font-extrabold uppercase tracking-widest mb-4">${tutor.especialidad}</p>
-                    <p class="text-slate-300 text-sm leading-relaxed mb-6">${tutor.descripcion}</p>
-                    
-                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-2">Tecnologías Enseñas</h3>
-                    <div class="flex flex-wrap gap-1.5">${lenguajesHTML}</div>
-                </div>
-
-                <div class="bg-slate-900 border border-slate-800 p-6 flex flex-col justify-between rounded-none">
-                    <div>
-                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-1">Acción Operativa</h3>
-                        <p class="text-sm text-slate-400 mb-6">¿Deseas programar una sesión académica con este docente?</p>
+        container.innerHTML = `
+            <div class="bg-white rounded-2xl border border-slate-200 p-8">
+                <div class="flex items-center gap-6 mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 text-[#2563EB] font-bold rounded-2xl flex items-center justify-center text-3xl">
+                        ${mentor.first_name[0]}${mentor.last_name[0]}
                     </div>
-                    <a href="#/citas?tutor=${tutor.id}" class="block text-center bg-red-600 hover:bg-red-700 text-slate-100 font-black text-xs uppercase tracking-widest py-3 transition-colors rounded-none">
-                        Agendar Cita
-                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-800">${mentor.first_name} ${mentor.last_name}</h1>
+                        <p class="text-slate-500 text-sm mt-1">${mentor.email}</p>
+                        <div class="flex gap-4 mt-2 text-xs font-semibold text-slate-600">
+                            <span>⭐ ${mentor.average_rating} rating</span>
+                            <span>💼 ${mentor.experience} years exp.</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="bg-slate-900 border border-slate-800 p-6 rounded-none">
-                <h2 class="text-lg font-black text-slate-100 uppercase tracking-tight mb-4 border-b border-slate-800 pb-2">Comentarios de Estudiantes</h2>
-                <div class="space-y-3">${reseñasHTML}</div>
+                <div class="border-t border-slate-100 pt-6">
+                    <h2 class="font-bold text-slate-800 mb-2">About me</h2>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-6">${mentor.biography || 'No bio yet.'}</p>
+                </div>
+
+                <!-- Book Session Form -->
+                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-4">Schedule a Mentorship Session</h3>
+                    <form id="booking-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Available Slots</label>
+                            <select id="time-slot" class="w-full bg-white border border-slate-200 rounded-lg p-3 text-sm focus:border-[#2563EB] outline-none" required>
+                                <option value="">-- Select an availability slot --</option>
+                                ${mentor.availabilities.map(slot => `
+                                    <option value="${slot.day_of_week}|${slot.start_time}|${slot.end_time}">
+                                        ${slot.day_of_week} | ${slot.start_time.substring(0, 5)} - ${slot.end_time.substring(0, 5)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Mentorship Goal / Topic</label>
+                            <textarea id="booking-reason" placeholder="What are you working on or want to learn?" class="w-full bg-white border border-slate-200 rounded-lg p-3 text-sm h-24 focus:border-[#2563EB] outline-none" required></textarea>
+                        </div>
+
+                        <p id="booking-error" class="text-red-600 text-sm min-h-[1rem]"></p>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-[#2563EB] to-[#7C3AED] hover:opacity-95 text-white font-semibold text-sm py-3 rounded-lg transition-opacity">
+                            Confirm Appointment
+                        </button>
+                    </form>
+                </div>
             </div>
         `;
 
-    } catch (error) {
-        contenedor.innerHTML = `<p class="text-red-500 font-bold uppercase">Error al cargar el perfil del tutor.</p>`;
+        const form = container.querySelector('#booking-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const slotVal = container.querySelector('#time-slot').value;
+            const reason = container.querySelector('#booking-reason').value.trim();
+            const bookingError = container.querySelector('#booking-error');
+
+            if (!slotVal) return;
+
+            const [dayOfWeek, startTime, endTime] = slotVal.split('|');
+            
+            // Calculamos la fecha más cercana para ese día de la semana
+            const today = new Date();
+            const daysMap = { 'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6 };
+            const targetDay = daysMap[dayOfWeek];
+            const currentDay = today.getDay();
+            
+            let distance = targetDay - currentDay;
+            if (distance <= 0) distance += 7; // Próxima semana
+            
+            const appointmentDate = new Date(today);
+            appointmentDate.setDate(today.getDate() + distance);
+            const dateString = appointmentDate.toISOString().split('T')[0];
+
+            try {
+                await api.post('/citas/book', {
+                    mentorId,
+                    date: dateString,
+                    startTime,
+                    endTime,
+                    reason
+                });
+                
+                // Redirigir al historial de citas del estudiante
+                window.location.hash = '#/citas';
+            } catch (err) {
+                bookingError.textContent = err.response?.data?.message || 'Could not schedule booking.';
+            }
+        });
+
+    } catch (err) {
+        container.innerHTML = `<p class="text-red-500">Tutor profile failed to load.</p>`;
     }
 
-    return contenedor;
+    return container;
 }

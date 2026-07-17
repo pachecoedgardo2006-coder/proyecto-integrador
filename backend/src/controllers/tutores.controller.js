@@ -1,44 +1,66 @@
-const { dbQuery } = require('../config/db');
-const asyncHandler = require('../utils/asyncHandler');
-const ApiError = require('../utils/ApiError');
+import { dbQuery } from '../config/db.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
-// Obtener todos los tutores con sus lenguajes de programación
-const obtenerTutores = asyncHandler(async (req, res) => {
-    const tutores = await dbQuery("SELECT * FROM tutores");
-
-    for (let tutor of tutores) {
-        // Nota: Asegúrate de si tu BD usa ? o $1 para los parámetros
-        const lenguajes = await dbQuery("SELECT lenguaje FROM tutor_lenguajes WHERE tutor_id = ?", [tutor.id]);
-        tutor.lenguajes = lenguajes.map(l => l.lenguaje);
-
-        const promedio = await dbQuery("SELECT AVG(calificacion) as prom FROM reseñas WHERE tutor_id = ?", [tutor.id]);
-        tutor.calificacion = promedio[0].prom ? parseFloat(promedio[0].prom).toFixed(1) : "5.0";
-    }
-
-    res.json(tutores);
+// Get all mentors with their specialties
+export const getMentors = asyncHandler(async (req, res) => {
+    const query = `
+        SELECT 
+            m.id AS mentor_id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            u.phone,
+            m.biography,
+            m.experience,
+            m.average_rating,
+            COALESCE(
+                json_agg(
+                    json_build_object('id', s.id, 'name', s.name)
+                ) FILTER (WHERE s.id IS NOT NULL), '[]'
+            ) AS specialties
+        FROM "mentor" m
+        JOIN "user" u ON m.user_id = u.id_number
+        LEFT JOIN "mentor_specialty" ms ON m.id = ms.mentor_id
+        LEFT JOIN "specialty" s ON ms.specialty_id = s.id
+        WHERE u.active = true
+        GROUP BY m.id, u.first_name, u.last_name, u.email, u.phone;
+    `;
+    const result = await dbQuery(query);
+    res.status(200).json(result.rows);
 });
 
-// Obtener detalle de un tutor
-const obtenerDetalleTutor = asyncHandler(async (req, res) => {
+// Get detailed mentor information, including availability
+export const getMentorDetails = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const tutor = await dbQuery("SELECT * FROM tutores WHERE id = ?", [id]);
+    const mentorQuery = `
+        SELECT 
+            m.id AS mentor_id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            m.biography,
+            m.experience,
+            m.average_rating
+        FROM "mentor" m
+        JOIN "user" u ON m.user_id = u.id_number
+        WHERE m.id = $1;
+    `;
+    const mentorResult = await dbQuery(mentorQuery, [id]);
 
-    if (!tutor || tutor.length === 0) {
-        throw new ApiError(404, "Tutor no encontrado");
+    if (mentorResult.rows.length === 0) {
+        return res.status(404).json({ message: 'Mentor not found' });
     }
 
-    const lenguajes = await dbQuery("SELECT lenguaje FROM tutor_lenguajes WHERE tutor_id = ?", [id]);
-    const reseñas = await dbQuery("SELECT estudiante_nombre, calificacion, comentario FROM reseñas WHERE tutor_id = ?", [id]);
+    const availabilityQuery = `
+        SELECT id, day_of_week, start_time, end_time, status
+        FROM "availability"
+        WHERE mentor_id = $1 AND status = 'available';
+    `;
+    const availabilityResult = await dbQuery(availabilityQuery, [id]);
 
-    res.json({
-        ...tutor[0],
-        lenguajes: lenguajes.map(l => l.lenguaje),
-        reseñas
-    });
+    const mentor = mentorResult.rows[0];
+    mentor.availabilities = availabilityResult.rows;
+
+    res.status(200).json(mentor);
 });
-
-module.exports = {
-    obtenerTutores,
-    obtenerDetalleTutor
-};
